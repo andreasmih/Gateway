@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using APIGateway;
 using APIGateway.Helpers;
 using APIGateway.Models;
-using GatewayIntegrationTesting.Helpers;
 using NUnit.Framework;
 
 namespace GatewayIntegrationTesting

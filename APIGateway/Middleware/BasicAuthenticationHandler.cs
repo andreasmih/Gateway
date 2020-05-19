@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http.Headers;
 using System.Security.Claims;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using APIGateway.Interfaces;
@@ -44,7 +41,7 @@ namespace APIGateway.Middleware
             }
             catch(Exception ex)
             {
-                return AuthenticateResult.Fail("Invalid Authorization Header");
+                return AuthenticateResult.Fail($"Invalid Authorization Header: Exception {ex}");
             }
 
             if (mer == null)

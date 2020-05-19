@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GatewayIntegrationTesting.Helpers;
+﻿using GatewayIntegrationTesting.Helpers;
 using NUnit.Framework;
 
 namespace GatewayIntegrationTesting

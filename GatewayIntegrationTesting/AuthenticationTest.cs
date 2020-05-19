@@ -1,18 +1,8 @@
 using System;
-using System.IO;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Text;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using APIGateway;
-using APIGateway.Helpers;
-using APIGateway.Models;
-using GatewayIntegrationTesting.Helpers;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using NUnit.Framework;
 
 namespace GatewayIntegrationTesting

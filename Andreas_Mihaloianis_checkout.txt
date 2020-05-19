@@ -144,7 +144,7 @@ Additional notes & future insight:
 	- Almost all the codebase supports asynchronous running. This helps with performance and responsiveness under traffic,
 as it minimises the chance that the thread pool will have no thread to assign for executing incoming requests, therefore
 minimising the virtual wait time. Stress tests should be implemented as next a next step, in order to visualise this feature
-(but also because it's good practice).	
+(but mostly because it's good practice).	
 	- The main database (set up in the Startup.cs file) uses an in-memory database. Before having integration tests, I used
 this and Postman in order to test my functionality. This provided me a way of storing information without actually having a
 DB for the scope of one web server start. Once moving to production, a real connection string to a real DB needs to be added
@@ -153,7 +153,7 @@ integration testing database, which is an in-memory one, but should remain this 
 testing works.
 	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
 	file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
-	- There is no build-in deployment pipeline for this application. Once the suitable changes reequired for running in the 
+	- There is no build-in deployment pipeline for this application. Once the suitable changes required for running in the 
 	production environment have been done, containerization/deployment CI should be set up.
 	
 	

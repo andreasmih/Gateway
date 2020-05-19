@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using APIGateway.Helpers;
 using APIGateway.Interfaces;
 using APIGateway.Models;
 using APIGateway.Models.DB;
@@ -19,19 +17,23 @@ namespace APIGateway.Services
 
         public async Task<BankPaymentResponse> SendPayment(Payment payment)
         {
-            _log.LogInformation("Mocking payment send to bank... If amount value is >50 it will fail.");
-            if (payment.Amount > 50)
+            return await Task.Run(() =>
+            {
+                _log.LogInformation("Mocking payment send to bank... If amount value is >50 it will fail.");
+            
+                if (payment.Amount > 50)
+                    return new BankPaymentResponse
+                    {
+                        PaymentId = null,
+                        Status = Constants.BankResponses.Failed
+                    };
+
                 return new BankPaymentResponse
                 {
-                    PaymentId = null,
-                    Status = Constants.BankResponses.Failed
+                    PaymentId = "id" + payment.Id + "am" + payment.Amount,
+                    Status = Constants.BankResponses.Success
                 };
-
-            return new BankPaymentResponse
-            {
-                PaymentId = "id" + payment.Id + "am" + payment.Amount,
-                Status = Constants.BankResponses.Success
-            };
+            });
         }
     }
 }

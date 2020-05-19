@@ -1,5 +1,4 @@
 using System.IO;
-using System.Net.Http;
 using APIGateway.Helpers;
 using APIGateway.Interfaces;
 using APIGateway.Middleware;

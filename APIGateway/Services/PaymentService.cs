@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Text.Json;
 using System.Threading.Tasks;
 using APIGateway.Interfaces;
 using APIGateway.Models;
 using APIGateway.Models.DB;
-using Microsoft.AspNetCore.Razor.Language.Intermediate;
 
 namespace APIGateway.Services
 {
