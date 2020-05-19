@@ -1,0 +1,160 @@
+Overview:
+In order to create a gateway in accordance with the requirements of this exercise, we need to expose an 
+API that any merchant can call. Since the main business entity that those requirements rely on is a payment,
+we create 2 endpoints that can be reached through HTTP calls. In order to satisfy the aspect of communicating
+with a bank, we need to create a service that makes it happen and validates the response. Also, we need to 
+store some data in a persistant source such a database in order to be able to validate requests against our
+real customers.
+
+Requirements:
+1. Process a payment
+	This is done by making a POST call to https://localhost:44315/payment with a suitable JSON body that
+	should contain the following fields:
+		{
+			"card_number": "6436643297557554",     - (string)card number
+			"expiry_date": "2020-10-23T00:00:00",  - (DateTime)card expiry date
+			"cvv": "425",						  - (string)card's CVV
+			
+			"amount": 36.54,                      - (decimal)payment amount
+			"currency": "GBP",                    - (string)payment currency 
+			"merchant_id": 1                       - (int)merchant id   # required for validation
+		}
+		
+	The response returned to the merchant is an object that contains 3 fields:
+	{
+		"id": 3,                                  - (int) our internal id for this payment
+		"bank_reference": "id3am46.54",           - (string) the unique bank reference id 
+		"status": "OK"                            - (string) "OK"/"FAIL" to signify if the payment went through
+	}	
+	The Id field above is to be used for retrieving information about this payment later.
+	
+	Note: I am not sure if it is a good idea to send the bank reference to the merchant - this is a question that
+	I would ask the business/legal department as I feel it might me forbidden by regulation. Considering this, in
+	the payment retrieve response lacks this field, which could easily be added if needed.
+			
+2. Retrieve the details of a payment
+	This is done by making a GET call to https://localhost:44315/payment?id=1 using a the suitable
+	payment id in the URI.
+	
+	The response contains the following fields:
+	{
+		"masked_card_number": "************7554", - (string) a masked version of the card number
+		"expiry_date": "2020-10-23T00:00:00",     - (DateTime) card expiry date 
+		"cvv": "425",                             - (string)card's CVV
+		
+		"status": "OK",                           - (string) payment's status
+		
+		"amount": 46.54,                          - (int) payment amount
+		"currency": "GBP"                         - (string) payment currency
+	}
+
+Deliverables:
+	The main API is found in the APIGateway project and contains a web server that, once ran, can listen to
+	the 2 types of request presented above. The simulator/mock for the bank payment response has been done in 
+	the BankPaymentService.cs class, which extends the IBankPaymentService interface. In order to move on to
+	production with this code, one needs to write a new implementation (one that actually calls the bank) and
+	properly register it. Also, a unit test project has been created with the purpose of testing the 
+	services inside the Gateway, along with an integration test suite for end-to-end testing.
+
+Codebase:
+	The codebase is formed by 3 projects all of which are in the same solution. One of them is the main gateway,
+	while the other 2 serve testing purposes. The next section will go thorugh each folder in the 3 projects and
+	explain it purpose.
+
+	1.APIGateway:
+		Controllers:
+			This folder hosts the only controller of our application, the payment controller. It is responsible 
+			with handling incoming requests through the API and deciding what to do with them. This is quite
+			straight-forward.
+		Helpers:
+			This folder houses global helpers and anything that is atomic and does not have and dependency. In our
+			case, these are:
+				- a Constants file used in order not to hard-code the same value in multiple places
+				- a custom JSON naming policy used to convert using snake casing 
+		Interfaces:
+			This in one of the key components of a scalable application. Coding against interfaces gives the ability
+			to late-bind injected services (similar to how we did it in some tests) and makes it easy to add or change
+			the functionality of any particular service at a later point in time. There are 4 interfaces in our project,
+			one for each service that we created. As stated in the deliverables section, in order to change one of these
+			implementations with another one, the new one only needs to be written and registered in the Startup.cs file
+			as the desired implementation.
+		Middleware:
+			When running a web server, we are going to receive many requests from many different sources. One issue
+			that this pattern presents is when you need to run the same actions against all the requests - like 
+			general validation and authentication. Here is where middleware come into action by letting you running 
+			some code before the controllers are triggered. Here, we are doing a basic authentication that checks 
+			whether the request comes from an authorised user or not. We are not doing the actual validation here, but
+			we call a specific service to do that. We need a middleware to shortcut the response in case of a authentication 
+			fail.
+		Models:
+			This contains all the entities in our application and our POCOs. The "DB" subfolder contains all the
+			entities we have in our database, along with a context class used to retrieve these entities from the
+			DB and to define the relationship between the entities. The "Mappers" subfolder contains and Automappper
+			class that is responsible for transforming one object into another. This is used for mapping request object
+			to DB classes, as there might be slight differences and fields to manipulate. All the other objects aree used
+			either to send or to retrieve information within our endpoints.
+		Services:
+			This folder contains all the services in our application - it is where all the magic happens. Each of these 
+			services has its own dependencies injected as interfaces and has one responsibility only. The BankPaymentService
+			is the "bank-mocking" service and should be replaced with a real implementation in production. It returns a 
+			"OK" response when an amount value <50 is paid and "FAIL" otherwise. The data service handles all the database
+			queries that we need to do from within the application. If we need to get/save/update anything from/to our database,
+			this is where we will find the service that does it. Since we need a database to authenticate a user correctly,
+			the logic that handles all of that can be found here (DataService.cs). The payment service is the service that 
+			defines the logic for the 2 endpoints we expose in the gateway, while the validation service makes sure we have 
+			a valid payment before we go through with it.
+		nlog.config:
+			This file contains the NLog configuartion needed to properly log into the right message into the right channel.
+		Program.cs:
+			Here, we define the web host and we run it. We also register NLog as our logging mechanism.
+		Startup.cs:
+			This serves as the location of the dependency container setup, as well as all the other components that form the
+			gateway. Controllers are added, implementations are assigned to interfaces, authentication is included and 
+			middlewares are initialised.
+	
+	2.GatewayIntegrationTesting:
+		Helpers:
+			This folder only contains one file: CustomWebApplicationFactory.cs that sets up a factory for the web host and 
+			configures it to be used in the tests. This file also seed the database with a few needed entities, like some 
+			merchants and a payment in our particular scenario. An in-memory database is used.
+		IntegrationTestBase.cs:
+			Is a class that only defines the [OneTimeSetUp] method which creates the custom factory and exposes it to. Exntending
+			this class means using the factory to create an integration test.This is done by the following test classes:
+		AuthenticationTest.cs:
+			Runs tests for authentication for the endpoints in our project
+		EndpoinTest.cs:
+			Runs tests where the content of the API response is checked, rather than the authenticity/response statuses
+	
+	3.GatewayTests:
+		TestBase.cs:
+			Similar to IntegrationTestBase.cs, TestBase.cs defines and constructs the services in such a way that they can
+			be used by all tests. If you want to test some of the services involved, you should write your tests class and extend
+			TestBase.cs so that you have access to these dependencies. 
+		DataServiceTests.cs and PaymentServiceTests.cs 
+			List the unit tests written to assess the correcness of the respective services.
+
+How to test:
+The way I was testing during development is using the actual implementation of the webserver, calling the endpoints using Postman.
+This can still be achieved, but because the DB will be empty, no call should pass the authentication. 
+The integration testing project contains most of the tests that I have tried during implementation, stored and ready for future use 
+(this is what testing is). If someone needs to implement and then test a new requirement flow, their integration tests should be
+placed in this project, where the setup is already done.
+
+Additional notes & future insight:
+	- Almost all the codebase supports asynchronous running. This helps with performance and responsiveness under traffic,
+as it minimises the chance that the thread pool will have no thread to assign for executing incoming requests, therefore
+minimising the virtual wait time. Stress tests should be implemented as next a next step, in order to visualise this feature
+(but also because it's good practice).	
+	- The main database (set up in the Startup.cs file) uses an in-memory database. Before having integration tests, I used
+this and Postman in order to test my functionality. This provided me a way of storing information without actually having a
+DB for the scope of one web server start. Once moving to production, a real connection string to a real DB needs to be added
+(best practice is to use usersecrets) and the in-memory version should be changed/deleted. Note that this is different to the
+integration testing database, which is an in-memory one, but should remain this way because of the way integration
+testing works.
+	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
+	file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
+	- There is no build-in deployment pipeline for this application. Once the suitable changes reequired for running in the 
+	production environment have been done, containerization/deployment CI should be set up.
+	
+	
+
