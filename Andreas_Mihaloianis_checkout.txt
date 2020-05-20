@@ -59,7 +59,7 @@ Deliverables:
 Codebase:
 	The codebase is formed by 3 projects all of which are in the same solution. One of them is the main gateway,
 	while the other 2 serve testing purposes. The next section will go thorugh each folder in the 3 projects and
-	explain it purpose.
+	explain its purpose.
 
 	1.APIGateway:
 		Controllers:
@@ -67,12 +67,12 @@ Codebase:
 			with handling incoming requests through the API and deciding what to do with them. This is quite
 			straight-forward.
 		Helpers:
-			This folder houses global helpers and anything that is atomic and does not have and dependency. In our
+			This folder houses global helpers and anything that is atomic and does not have a dependency. In our
 			case, these are:
 				- a Constants file used in order not to hard-code the same value in multiple places
 				- a custom JSON naming policy used to convert using snake casing 
 		Interfaces:
-			This in one of the key components of a scalable application. Coding against interfaces gives the ability
+			This is one of the key components of a scalable application. Coding against interfaces gives the ability
 			to late-bind injected services (similar to how we did it in some tests) and makes it easy to add or change
 			the functionality of any particular service at a later point in time. There are 4 interfaces in our project,
 			one for each service that we created. As stated in the deliverables section, in order to change one of these
@@ -84,14 +84,14 @@ Codebase:
 			general validation and authentication. Here is where middleware come into action by letting you running 
 			some code before the controllers are triggered. Here, we are doing a basic authentication that checks 
 			whether the request comes from an authorised user or not. We are not doing the actual validation here, but
-			we call a specific service to do that. We need a middleware to shortcut the response in case of a authentication 
+			we call a specific service to do that. We use a middleware to shortcut the response in case of a authentication 
 			fail.
 		Models:
 			This contains all the entities in our application and our POCOs. The "DB" subfolder contains all the
 			entities we have in our database, along with a context class used to retrieve these entities from the
 			DB and to define the relationship between the entities. The "Mappers" subfolder contains and Automappper
 			class that is responsible for transforming one object into another. This is used for mapping request object
-			to DB classes, as there might be slight differences and fields to manipulate. All the other objects aree used
+			to DB classes, as there might be slight differences and fields to manipulate. All the other objects are used
 			either to send or to retrieve information within our endpoints.
 		Services:
 			This folder contains all the services in our application - it is where all the magic happens. Each of these 
@@ -115,7 +115,7 @@ Codebase:
 	2.GatewayIntegrationTesting:
 		Helpers:
 			This folder only contains one file: CustomWebApplicationFactory.cs that sets up a factory for the web host and 
-			configures it to be used in the tests. This file also seed the database with a few needed entities, like some 
+			configures it to be used in the tests. This file also seeds the database with a few needed entities, like some 
 			merchants and a payment in our particular scenario. An in-memory database is used.
 		IntegrationTestBase.cs:
 			Is a class that only defines the [OneTimeSetUp] method which creates the custom factory and exposes it to. Exntending
@@ -127,9 +127,9 @@ Codebase:
 	
 	3.GatewayTests:
 		TestBase.cs:
-			Similar to IntegrationTestBase.cs, TestBase.cs defines and constructs the services in such a way that they can
-			be used by all tests. If you want to test some of the services involved, you should write your tests class and extend
-			TestBase.cs so that you have access to these dependencies. 
+			TestBase.cs defines and constructs the services in such a way that they can be used by all tests. If you want to test
+			some of the services involved, you should write your tests class and extend TestBase.cs so that you have access to 
+			these dependencies. 
 		DataServiceTests.cs and PaymentServiceTests.cs 
 			List the unit tests written to assess the correcness of the respective services.
 
@@ -152,9 +152,9 @@ DB for the scope of one web server start. Once moving to production, a real conn
 integration testing database, which is an in-memory one, but should remain this way because of the way integration
 testing works.
 	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
-	file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
+file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
 	- There is no build-in deployment pipeline for this application. Once the suitable changes required for running in the 
-	production environment have been done, containerization/deployment CI should be set up.
+production environment have been done, containerization/deployment CI should be set up.
 	
 	
 
