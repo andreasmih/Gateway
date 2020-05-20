@@ -161,7 +161,7 @@ should also be replaced pre-production.
 	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
 file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
 	- Unit testing covers only 2/4 services implemented at the moment. It is desirable and recommended to have as much cover as
-possible when testing services, so after the real production implementation of the not tested services is written, that should be
+possible when testing services, so after the real production implementation of the not tested services is written, they should be
 unit tested.
 	- The basic authentication built in the data service uses a password (user-provided) and a salt (stored in the DB) and creates
 a hashed password that is checked against the DB password upon each request. The salt is used in order to prevent against malicious
