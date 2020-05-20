@@ -155,6 +155,9 @@ DB for the scope of one web server start. Once moving to production, a real conn
 integration testing database, which is an in-memory one, but should remain this way because of the way integration
 testing works. As mentioned before, another implementation that needs to be done pre-production is the IBankService one, which
 should make the call to the bank.
+	- The validation techniques used in this implementation are quite basic and a real-life validation on such a request should
+be more complex, looking for patterns such as the number of digits in the CVV or the card number. In reality, this service 
+should also be replaced pre-production.
 	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
 file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
 	- There is no build-in deployment pipeline for this application. Once the suitable changes required for running in the 
