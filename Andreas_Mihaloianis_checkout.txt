@@ -85,12 +85,12 @@ Codebase:
 			some code before the controllers are triggered. Here, we are doing a basic authentication that checks 
 			whether the request comes from an authorised user or not. We are not doing the actual validation here, but
 			we call a specific service to do that. We use a middleware to shortcut the response in case malicious users
-			are trying the endpoint, while consuming less resources overall.
+			are calling the endpoint, while consuming less resources overall.
 		Models:
 			This contains all the entities in our application and our POCOs. The "DB" subfolder contains all the
 			entities we have in our database, along with a context class used to retrieve these entities from the
 			DB and to define the relationship between the entities. The "Mappers" subfolder contains and Automappper
-			class that is responsible for transforming one object into another. This is used for mapping request object
+			class that is responsible for transforming one object into another. This is used for mapping request objects
 			to DB classes, as there might be slight differences and fields to manipulate. Also, by using Automapper we
 			prevent our 'sensible' models (the ones in the DB) to be exposed directly. All the other objects are used
 			either to send or to retrieve information within our endpoints.
