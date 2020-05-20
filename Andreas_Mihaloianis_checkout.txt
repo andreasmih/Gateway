@@ -160,6 +160,13 @@ be more complex, looking for patterns such as the number of digits in the CVV or
 should also be replaced pre-production.
 	- Logging has been implemented and at the moment everything is logged into the /var/log/Gateway/allLogs path under a daily
 file. Logging smarter is possible using the nlog.config configuration in order to direct service-grouped logs accordingly.
+	- Unit testing covers only 2/4 services implemented at the moment. It is desirable and recommended to have as much cover as
+possible when testing services, so after the real production implementation of the not tested services is written, that should be
+unit tested.
+	- The basic authentication built in the data service uses a password (user-provided) and a salt (stored in the DB) and creates
+a hashed password that is checked against the DB password upon each request. The salt is used in order to prevent against malicious
+attacks such the rainbox attack that use pre-computed hash tables. This authentication should be replaced by one of the more complex
+authorizing techniques when moved in production, such as OAuth or JWT.
 	- There is no build-in deployment pipeline for this application. Once the suitable changes required for running in the 
 production environment have been done, containerization/deployment CI should be set up.
 	
